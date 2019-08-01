@@ -39,39 +39,46 @@ class Add extends React.Component {
             </Button>
           </Left>
           <Body>
-            <Title>New Habit</Title>
+            <Title>Add Habit</Title>
           </Body>
           <Right />
         </Header>
-        <Content contentContainerStyle={{ justifyContent: 'space-evenly', flex: 1, alignItems: 'center', padding: 10 }}>
+        <Content contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 55, alignItems: 'center' }}>
           <View style={{ width: '100%' }}>
-            <Item regular style={{ marginBottom: 15 }}>
+            <Item regular style={{ marginBottom: 21, width: '90%', alignSelf: 'center', marginRight: 10 }}>
               <Input onChangeText={this.onValueChange1.bind(this)} placeholder='Title' />
             </Item>
-            <Form>
-              <Item picker>
-                <Picker
-                  mode="dropdown"
-                  iosIcon={<Icon name="arrow-down" />}
-                  style={{ width: '78%' }}
-                  textStyle={{ maxWidth: '100%' }}
-                  placeholder="Select your habit interval"
-                  placeholderStyle={{ maxWidth: '100%', color: "#bfc6ea" }}
-                  placeholderIconColor="#007aff"
-                  selectedValue={this.state.time}
-                  onValueChange={this.onValueChange.bind(this)}
-                >
-                  <Picker.Item label="Daily" value="daily" />
-                  <Picker.Item label="Weekly" value="weekly" />
-                </Picker>
-              </Item>
-            </Form>
+            <View style={{ width: '90%', alignSelf: 'center', marginRight: 10}}>
+              <Form>
+                <Item picker>
+                  <Picker
+                    mode="dropdown"
+                    iosIcon={<Icon name="arrow-down" />}
+                    style={{ width: '78%' }}
+                    textStyle={{ maxWidth: '100%' }}
+                    placeholder="Select your habit interval"
+                    placeholderStyle={{ maxWidth: '100%', color: "#bfc6ea" }}
+                    placeholderIconColor="#007aff"
+                    selectedValue={this.state.time}
+                    onValueChange={this.onValueChange.bind(this)}
+                  >
+                    <Picker.Item label="Daily" value="daily" />
+                    <Picker.Item label="Weekly" value="weekly" />
+                  </Picker>
+                </Item>
+              </Form>
+            </View>
           </View>
-          <Button onPress={() => addNewHabit(this.state.habit, this.state.time)} block>
-            <Text> Add Habit </Text>
+          <View style={styles.addHabitContainer}>
+            <Button onPress={() => {
+              addNewHabit(this.state.habit, this.state.time)
+              history.goBack()
+            }} block>
+            <Icon name='md-add' />
           </Button>
-        </Content>
-      </Container>
+        </View>
+      </Content>
+    </Container>
     );
   }
 }
@@ -103,5 +110,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  addHabitContainer: {
+    width: '100%',
+    padding: 20,
+    marginTop: 89
   },
 });
