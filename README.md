@@ -33,8 +33,8 @@ iOS store deployment - TODO
 ## Built With
 
 * [React Native](https://facebook.github.io/react-native/) - The web framework used
-* [Expo](https://rometools.github.io/rome/) - Used to generate app template and run dev environment
-* [Firebase Cloud Firestore](https://maven.apache.org/) - Cloud database
+* [Expo](https://expo.io/) - Used to generate app template and run dev environment
+* [Firebase Cloud Firestore](https://firebase.google.com/docs/firestore) - Cloud database
 
 ## Contributing
 
