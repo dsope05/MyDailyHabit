@@ -34,16 +34,18 @@ class Add extends React.Component {
       <Container>
         <Header>
           <Left>
-            <Button onPress={history.goBack}transparent>
-              <Icon name='arrow-back' />
+            <Button onPress={history.goBack} transparent>
+              <Icon style={{ marginLeft: 7 }} name='arrow-back' />
             </Button>
           </Left>
           <Body>
             <Title>Add Habit</Title>
           </Body>
-          <Right />
+          <Right>
+              <Icon style={{ marginRight: 7 }} name='logo-python' />
+          </Right>
         </Header>
-        <Content contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 55, alignItems: 'center' }}>
+        <Content contentContainerStyle={{  flexGrow: 1, padding: 5, paddingTop: 55, alignItems: 'center' }}>
           <View style={{ width: '100%' }}>
             <Item regular style={{ marginBottom: 21, width: '90%', alignSelf: 'center', marginRight: 10 }}>
               <Input onChangeText={this.onValueChange1.bind(this)} placeholder='Title' />
@@ -75,10 +77,10 @@ class Add extends React.Component {
               history.goBack()
             }} block>
             <Icon name='md-add' />
-          </Button>
-        </View>
-      </Content>
-    </Container>
+            </Button>
+          </View>
+        </Content>
+      </Container>
     );
   }
 }

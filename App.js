@@ -8,6 +8,12 @@ import { createStore } from 'redux';
 import reducer from './src/reducers';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import moment from 'moment';
+import db from './config';
+
+db.collection('habits').get().then(querySnapshot => querySnapshot.forEach(doc => {
+  console.log('doc id', doc.id)
+  console.log('data', doc.data())
+}))
 
 const store = createStore(reducer);
 
@@ -15,13 +21,14 @@ const HabitCard = ({ item, addStreak}) => (
   <TouchableOpacity onPress={() => addStreak(item)} style={styles.flatListContainer}>
     <Card style={styles.flatlist}>
       <Text style={styles.habit}> {item.habit} </Text>
-      <Text style={styles.streak}> {item.streak} </Text>
+      <View style={styles.streak}>
+        <Text style={{ fontSize: 16}}> {item.streak} </Text>
+      </View>
     </Card>
   </TouchableOpacity>
 );
 //contentContainerStyle={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}
 const Home = ({ history, habits, weeklyHabitExist, dailyHabitExist, addStreak}) => {
-  console.log('srtreakl', addStreak)
   return (
     <Container>
       <Header>
@@ -38,7 +45,10 @@ const Home = ({ history, habits, weeklyHabitExist, dailyHabitExist, addStreak}) 
       <Content contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 10 }}>
         { dailyHabitExist && (
           <View>
-            <Text style={styles.timeTitle}> Daily Habits </Text>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <Text style={{ marginTop: 10, color: '#007aff'}}> Daily Habits </Text>
+              <Text style={{ marginLeft: 'auto', marginRight: 12, marginTop: 10, color: '#D4AF37' }}> Streaks </Text>
+            </View>
             <FlatList
               data={habits}
               renderItem={({item}) => {
@@ -72,8 +82,8 @@ const Home = ({ history, habits, weeklyHabitExist, dailyHabitExist, addStreak}) 
             <Text style={styles.addBtn}> Add Habit </Text>
           </Button>
         </View>
-      </Content>
-    </Container>
+    </Content>
+  </Container>
   );
 }
 
@@ -148,17 +158,30 @@ const styles = StyleSheet.create({
   },
   flatlist: {
     paddingLeft: 10,
-    paddingRight: 20,
     flexDirection: 'row',
     height: 60,
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    overflow: 'hidden',
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1
   },
   streak: {
-    marginLeft: 'auto'
+    width: 58,
+    borderTopLeftRadius: 45, 
+    borderBottomLeftRadius: 45,
+    height: 80,
+    backgroundColor: '#E0EEEE',
+    position: 'relative',
+    marginLeft: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   timeTitle: {
+    color: '#007aff',
     marginBottom: 10
   },
 });
