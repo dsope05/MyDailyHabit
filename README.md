@@ -9,8 +9,8 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 ```
-iOS simulator
-node
+XCode && iOS simulator
+node @ latest recommended
 ```
 
 ### Installing
@@ -21,10 +21,6 @@ git clone https://github.com/dsope05/MyDailyHabit.git
 cd MyDaily Habit
 yarn start
 ```
-
-## Running the tests
-
-No Tests yet
 
 ## Deployment
 
