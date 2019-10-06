@@ -3,6 +3,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Form, Picker, Container, Header, Content, Button, Title, Body, Right, Left, Icon, Item, Input } from 'native-base';
 import { NativeRouter, Route, Link } from "react-router-native";
 import { connect } from 'react-redux';
+import db from '../../config';
+import firebase from 'firebase';
 
 class Add extends React.Component {
   constructor(props) {
@@ -14,22 +16,20 @@ class Add extends React.Component {
   }
 
   onValueChange(value) {
-    console.log('value', value)
     this.setState({
       time: value 
     });
-
   }
 
   onValueChange1(value) {
-    console.log('valueZZZ', value)
     this.setState({
       habit: value 
     });
 
   }
   render() {
-    const { history, addNewHabit } = this.props;
+    const { history, addNewHabit, uid } = this.props;
+    console.log('uid', uid)
     return (
       <Container>
         <Header>
@@ -73,7 +73,7 @@ class Add extends React.Component {
           </View>
           <View style={styles.addHabitContainer}>
             <Button onPress={() => {
-              addNewHabit(this.state.habit, this.state.time)
+              addNewHabit(this.state.habit, this.state.time, uid)
               history.goBack()
             }} block>
             <Icon name='md-add' />
@@ -86,9 +86,9 @@ class Add extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log('statezz', state)
-  const { habits, other } = state;
+  const { habits, other, uid } = state;
   return {
+    uid,
     habits,
     other
 
@@ -97,11 +97,18 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addNewHabit: (habit, time) => dispatch({
-      type: 'ADD_NEW_HABIT',
-      habit,
-      time
-    }) 
+    addNewHabit: (habit, time, uid) => {
+      const userRef = db.collection('habits').doc(uid);
+      userRef.update({
+        habits: firebase.firestore.FieldValue.arrayUnion({ habit, time, streak: 0 })
+      }).then(() => {
+        dispatch({
+          type: 'ADD_NEW_HABIT',
+          habit,
+          time
+        }) 
+      })
+    }
   }
 }
 const AddContainer = connect(mapStateToProps, mapDispatchToProps)(Add)
