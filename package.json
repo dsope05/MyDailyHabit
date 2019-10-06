@@ -4,10 +4,13 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
+    "lint": "eslint --ignore-path .gitignore --ext js,jsx,snap .",
     "web": "expo start --web",
     "eject": "expo eject"
   },
   "dependencies": {
+    "eslint": "^6.5.1",
+    "eslint-config-amex": "^11.1.0",
     "expo": "^33.0.0",
     "firebase": "^6.3.4",
     "history": "^4.9.0",

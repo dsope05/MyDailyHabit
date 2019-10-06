@@ -1,15 +1,8 @@
 export default function reducer(state = {
-  habits: [{
-    habit: 'walk dog',
-    time: 'daily',
-    streak: 0
-  }, {
-    habit: 'practice piano',
-    time: 'weekly',
-    streak: 0
-  }],
+  habits: [],
   weeklyHabitExist: true,
-  dailyHabitExist: true
+  dailyHabitExist: true,
+  uid: '',
 }, action) {
   switch (action.type) {
     case 'ADD_NEW_HABIT':
@@ -23,6 +16,14 @@ export default function reducer(state = {
       const habitIdx = habits.indexOf(action.item)
       habits[habitIdx].streak++
       return Object.assign({}, state, { habits });
+    case 'INIT_APP':
+      return Object.assign({}, state, {
+        habits: action.data.habits,
+        uid: action.uid,
+        email: action.email
+      });
+    case 'FB_SIGN_UP_SUCCESS':
+      return Object.assign({}, state, { uid: action.uid, email: action.email });
     default:
       return state;
   }

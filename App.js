@@ -9,11 +9,8 @@ import reducer from './src/reducers';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import moment from 'moment';
 import db from './config';
-
-db.collection('habits').get().then(querySnapshot => querySnapshot.forEach(doc => {
-  console.log('doc id', doc.id)
-  console.log('data', doc.data())
-}))
+import SignUp from './src/components/signUp';
+import SignIn from './src/components/signIn';
 
 const store = createStore(reducer);
 
@@ -28,80 +25,112 @@ const HabitCard = ({ item, addStreak}) => (
   </TouchableOpacity>
 );
 //contentContainerStyle={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}
-const Home = ({ history, habits, weeklyHabitExist, dailyHabitExist, addStreak}) => {
-  return (
-    <Container>
-      <Header>
-        <Left>
-          <Button transparent>
-            <Icon name='menu' />
-          </Button>
-        </Left>
-        <Body>
-          <Title>{ moment().format('MMMM Do')}</Title>
-        </Body>
-        <Right />
-      </Header>
-      <Content contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 10 }}>
-        { dailyHabitExist && (
-          <View>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-              <Text style={{ marginTop: 10, color: '#007aff'}}> Daily Habits </Text>
-              <Text style={{ marginLeft: 'auto', marginRight: 12, marginTop: 10, color: '#D4AF37' }}> Streaks </Text>
-            </View>
-            <FlatList
-              data={habits}
-              renderItem={({item}) => {
-                if (item.time === 'daily') {
-                  return (
-                    <HabitCard item={item} addStreak={addStreak}/>
-                  )
-                }
-              }}
-            />
-          </View>
-        )}
-        { weeklyHabitExist &&
-            <View style={styles.weeklyContainer}>
-              <Text style={styles.timeTitle}> Weekly Habits </Text>
+class Home extends React.Component {
+  componentDidMount() {
+    const { initApp, uid } = this.props;
+    console.log('THE uid', uid)
+    initApp(uid); 
+  }
+
+  render() {
+    const { history, habits, weeklyHabitExist, dailyHabitExist, addStreak } = this.props;
+    return (
+      <Container>
+        <Header>
+          <Left>
+            <Button transparent>
+              <Icon name='menu' />
+            </Button>
+          </Left>
+          <Body>
+            <Title>{ moment().format('MMMM Do')}</Title>
+          </Body>
+          <Right />
+        </Header>
+        <Content contentContainerStyle={{ flexGrow: 1, padding: 5, paddingTop: 10 }}>
+          { dailyHabitExist && (
+            <View>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <Text style={{ marginTop: 10, color: '#007aff'}}> Daily Habits </Text>
+                <Text style={{ marginLeft: 'auto', marginRight: 12, marginTop: 10, color: '#D4AF37' }}> Streaks </Text>
+              </View>
               <FlatList
                 data={habits}
                 renderItem={({item}) => {
-                  console.log('item', item.time)
-                  if (item.time === 'weekly') {
+                  if (item.time === 'daily') {
                     return (
                       <HabitCard item={item} addStreak={addStreak}/>
-                    );
-                  }}
-                }
+                    )
+                  }
+                }}
               />
             </View>
-        }
-        <View style={styles.addHabitContainer}>
-          <Button onPress={() => history.push('add')} block>
-            <Text style={styles.addBtn}> Add Habit </Text>
-          </Button>
-        </View>
-    </Content>
-  </Container>
-  );
+          )}
+          { weeklyHabitExist &&
+              <View style={styles.weeklyContainer}>
+                <Text style={styles.timeTitle}> Weekly Habits </Text>
+                <FlatList
+                  data={habits}
+                  renderItem={({item}) => {
+                    console.log('item', item.time)
+                    if (item.time === 'weekly') {
+                      return (
+                        <HabitCard item={item} addStreak={addStreak}/>
+                      );
+                    }}
+                  }
+                />
+              </View>
+          }
+          <View style={styles.addHabitContainer}>
+            <Button onPress={() => history.push('add')} block>
+              <Text style={styles.addBtn}> Add Habit </Text>
+            </Button>
+          </View>
+        </Content>
+      </Container>
+    );
+  }
 }
 
 const mapStateToProps = (state) => {
-  const { habits, weeklyHabitExist, dailyHabitExist } = state;
+  const { habits, weeklyHabitExist, dailyHabitExist, uid } = state;
+  console.log('THE STATE', state)
   return {
     habits,
     weeklyHabitExist,
-    dailyHabitExist
+    dailyHabitExist,
+    uid
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addStreak: (item) => dispatch({
-      type: 'ADD_STREAK',
-      item
-    }) 
+    addStreak: (item) => {
+      dispatch({
+        type: 'ADD_STREAK',
+        item
+      }) 
+    },
+    initApp: (uid) => {
+      console.log("MY UID", uid)
+      /*
+      const userRef = db.collection('habits').doc(uid);
+      userRef.get().then((doc) => {
+        if (doc.exists) {
+          console.log('Document data:', doc.data()); 
+          console.log('doc id', doc.id)
+          console.log('data', doc.data())
+          dispatch({
+            type: 'INIT_APP',
+            data: doc.data()
+          })
+        } else {
+          console.log('No init Document');
+        }
+      })
+      */
+    }
   }
 }
 const HomeContainer = connect(mapStateToProps, mapDispatchToProps)(Home)
@@ -112,8 +141,10 @@ export default function App() {
       <NativeRouter>
         <Container>
           <Content>
-            <Route exact path="/" component={HomeContainer} />
+            <Route exact path="/home" component={HomeContainer} />
             <Route exact path="/add" component={Add} />
+            <Route exact path="/" component={SignIn} />
+            <Route exact path="/signUp" component={SignUp} />
           </Content>
         </Container>
       </NativeRouter>
