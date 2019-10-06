@@ -104,7 +104,7 @@ const mapDispatchToProps = (dispatch, props) => {
         }
       }).then((uid) => {
         db.collection('habits').doc(uid).set({
-          habits: [],
+          habits: {},
           email 
         })
           .then(function() {

@@ -9,13 +9,14 @@ import reducer from './src/reducers';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import moment from 'moment';
 import db from './config';
+import firebase from 'firebase';
 import SignUp from './src/components/signUp';
 import SignIn from './src/components/signIn';
 
 const store = createStore(reducer);
 
-const HabitCard = ({ item, addStreak}) => (
-  <TouchableOpacity onPress={() => addStreak(item)} style={styles.flatListContainer}>
+const HabitCard = ({ item, addStreak, uid, habits }) => (
+  <TouchableOpacity onPress={() => addStreak(item, uid, habits)} style={styles.flatListContainer}>
     <Card style={styles.flatlist}>
       <Text style={styles.habit}> {item.habit} </Text>
       <View style={styles.streak}>
@@ -26,14 +27,9 @@ const HabitCard = ({ item, addStreak}) => (
 );
 //contentContainerStyle={{ justifyContent: 'center', flex: 1, alignItems: 'center' }}
 class Home extends React.Component {
-  componentDidMount() {
-    const { initApp, uid } = this.props;
-    console.log('THE uid', uid)
-    initApp(uid); 
-  }
 
   render() {
-    const { history, habits, weeklyHabitExist, dailyHabitExist, addStreak } = this.props;
+    const { history, habits, weeklyHabitExist, dailyHabitExist, addStreak, uid } = this.props;
     return (
       <Container>
         <Header>
@@ -55,11 +51,11 @@ class Home extends React.Component {
                 <Text style={{ marginLeft: 'auto', marginRight: 12, marginTop: 10, color: '#D4AF37' }}> Streaks </Text>
               </View>
               <FlatList
-                data={habits}
+                data={Object.values(habits)}
                 renderItem={({item}) => {
                   if (item.time === 'daily') {
                     return (
-                      <HabitCard item={item} addStreak={addStreak}/>
+                      <HabitCard item={item} habits={habits} uid={uid} addStreak={addStreak}/>
                     )
                   }
                 }}
@@ -70,12 +66,12 @@ class Home extends React.Component {
               <View style={styles.weeklyContainer}>
                 <Text style={styles.timeTitle}> Weekly Habits </Text>
                 <FlatList
-                  data={habits}
+                  data={Object.values(habits)}
                   renderItem={({item}) => {
                     console.log('item', item.time)
                     if (item.time === 'weekly') {
                       return (
-                        <HabitCard item={item} addStreak={addStreak}/>
+                        <HabitCard item={item} uid={uid} habits={habits} addStreak={addStreak}/>
                       );
                     }}
                   }
@@ -106,31 +102,23 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addStreak: (item) => {
+    addStreak: (item, uid, habits) => {
+      const newItem = Object.assign({}, item);
+      console.log('item', item)
+      console.log('neItem', newItem)
+      console.log('habits', habits)
+      newItem.streak += 1;
+      console.log('habits', habits)
+      const newHabits = Object.assign({}, habits, { [item.habit]: newItem })
+      const habitRef = db.collection('habits').doc(uid);
+      habitRef.update({
+        habits: newHabits
+      });
       dispatch({
         type: 'ADD_STREAK',
-        item
+        item: newItem
       }) 
     },
-    initApp: (uid) => {
-      console.log("MY UID", uid)
-      /*
-      const userRef = db.collection('habits').doc(uid);
-      userRef.get().then((doc) => {
-        if (doc.exists) {
-          console.log('Document data:', doc.data()); 
-          console.log('doc id', doc.id)
-          console.log('data', doc.data())
-          dispatch({
-            type: 'INIT_APP',
-            data: doc.data()
-          })
-        } else {
-          console.log('No init Document');
-        }
-      })
-      */
-    }
   }
 }
 const HomeContainer = connect(mapStateToProps, mapDispatchToProps)(Home)

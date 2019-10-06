@@ -28,7 +28,7 @@ class Add extends React.Component {
 
   }
   render() {
-    const { history, addNewHabit, uid } = this.props;
+    const { history, addNewHabit, uid, habits } = this.props;
     console.log('uid', uid)
     return (
       <Container>
@@ -73,7 +73,7 @@ class Add extends React.Component {
           </View>
           <View style={styles.addHabitContainer}>
             <Button onPress={() => {
-              addNewHabit(this.state.habit, this.state.time, uid)
+              addNewHabit(this.state.habit, this.state.time, uid, habits)
               history.goBack()
             }} block>
             <Icon name='md-add' />
@@ -97,10 +97,12 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addNewHabit: (habit, time, uid) => {
+    addNewHabit: (habit, time, uid, habits) => {
+      const newHabit = Object.assign({}, { habit, time, streak: 0 });
+      const newHabits = Object.assign({}, habits, { [habit]: newHabit });
       const userRef = db.collection('habits').doc(uid);
       userRef.update({
-        habits: firebase.firestore.FieldValue.arrayUnion({ habit, time, streak: 0 })
+        habits: newHabits
       }).then(() => {
         dispatch({
           type: 'ADD_NEW_HABIT',
