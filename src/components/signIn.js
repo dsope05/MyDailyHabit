@@ -29,7 +29,7 @@ class SignIn extends React.Component {
   }
 
   render() {
-    const { history, fbSignIn } = this.props;
+    const { history, fbSignIn, signInError } = this.props;
     return (
       <Container>
         <Header>
@@ -54,6 +54,9 @@ class SignIn extends React.Component {
               <Input secureTextEntry={true} onChangeText={this.onPasswordChange.bind(this)} placeholder='Password' />
             </Item>
           </View>
+          <Text>
+            { signInError }
+          </Text>
           <View style={styles.addHabitContainer}>
             <Button onPress={() => {
               const { email, password } = this.state;
@@ -74,8 +77,9 @@ class SignIn extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { habits, other } = state;
+  const { habits, other, signInError } = state;
   return {
+    signInError,
     habits,
     other
 
@@ -86,11 +90,8 @@ const mapDispatchToProps = (dispatch, props) => {
   const { history } = props;
   return {
     fbSignIn: (email, password) => {
-      firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('errormessage', errorMessage)
-      }).then((res) => {
+      firebase.auth().signInWithEmailAndPassword(email, password).then((res) => {
+        console.log('res', res)
         if (res) {
           initApp(res.user.uid).then((userData) => {
             console.log('uid signin', res.user.uid)
@@ -103,6 +104,15 @@ const mapDispatchToProps = (dispatch, props) => {
           })
         }
       }).then(() => history.push('home'))
+        .catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+          dispatch({
+            type: 'SIGN_IN_ERROR', 
+            message: errorMessage
+          })
+        console.log('errormessage', errorMessage)
+      })
 
     }
   }

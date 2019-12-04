@@ -28,7 +28,7 @@ class SignUp extends React.Component {
   }
 
   render() {
-    const { history, fbSignUp } = this.props;
+    const { history, fbSignUp, signUpError } = this.props;
     return (
       <Container>
         <Header>
@@ -55,6 +55,10 @@ class SignUp extends React.Component {
             <Input secureTextEntry={true} onChangeText={this.onPasswordChange.bind(this)} placeholder='Password' />
           </Item>
         </View>
+        <Text>
+          { signUpError }
+        </Text>
+
         <View style={styles.addHabitContainer}>
           <Button onPress={() => {
             const { email, password } = this.state;
@@ -75,8 +79,10 @@ class SignUp extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-  const { habits, other } = state;
+  const { habits, other, signUpError } = state;
+  console.log('sing up error', signUpError)
   return {
+    signUpError,
     habits,
     other
 
@@ -87,11 +93,7 @@ const mapDispatchToProps = (dispatch, props) => {
   const { history } = props;
   return {
     fbSignUp: (email, password) => {
-      firebase.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('errorMessage', errorMessage)
-      }).then((res) => {
+      firebase.auth().createUserWithEmailAndPassword(email, password).then((res) => {
         console.log ('sign up res', res)
         if (res) {
           history.push('home');
@@ -114,8 +116,15 @@ const mapDispatchToProps = (dispatch, props) => {
             console.error("Error writing document: ", error);
           });
 
+      }).catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('error message: ', errorMessage)
+          dispatch({
+            type: 'SIGN_UP_ERROR',
+            message: errorMessage
+          })
       })
-
     }
   }
 }

@@ -2,6 +2,8 @@ export default function reducer(state = {
   habits: {},
   weeklyHabitExist: false,
   dailyHabitExist: false,
+  signUpError: '',
+  signInError: '',
   uid: '',
 }, action) {
   switch (action.type) {
@@ -15,6 +17,10 @@ export default function reducer(state = {
       const habits = Object.assign({}, state.habits);
       habits[action.item.habit].streak++;
       return Object.assign({}, state, { habits });
+    case 'SIGN_UP_ERROR':
+      return Object.assign({}, state, { signUpError: action.message });
+    case 'SIGN_IN_ERROR':
+      return Object.assign({}, state, { signInError: action.message });
     case 'INIT_APP':
       const { weeklyHabit, dailyHabit } = Object.values(action.data.habits).reduce((acc, cur, i) => {
         if (cur.time === 'daily') {
