@@ -14,7 +14,7 @@
     "expo": "^33.0.0",
     "firebase": "^6.3.4",
     "history": "^4.9.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "native-base": "^2.13.4",
     "react": "16.8.3",
     "react-dom": "^16.8.6",
